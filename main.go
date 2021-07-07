@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -27,25 +28,30 @@ func ref_str(x string) *string {
 	return &x
 }
 
-func todosOfFile(path string) []Todo {
-	// TODO: TodosOfFile not implemented
-	return []Todo{
-		Todo{
-			Prefix:   "// ",
-			Suffix:   "khooy",
-			Id:       ref_str("#42"),
-			Filename: "./main.go",
-			Line:     10,
-		},
+func lineAsTodo(line string) *Todo {
+	return nil
+}
 
-		Todo{
-			Prefix:   "// ",
-			Suffix:   "foo",
-			Id:       nil,
-			Filename: "./src/foo.go",
-			Line:     0,
-		},
+func todosOfFile(path string) ([]Todo, error) {
+	result := []Todo{}
+	file, err := os.Open(path)
+
+	if err != nil {
+		return []Todo{}, err
 	}
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		todo := lineAsTodo(scanner.Text())
+
+		if todo != nil {
+			result = append(result, *todo)
+		}
+	}
+
+	return result, scanner.Err()
 }
 
 func todosOfdir(dirpath string) ([]Todo, error) {
@@ -53,7 +59,13 @@ func todosOfdir(dirpath string) ([]Todo, error) {
 
 	err := filepath.Walk(dirpath, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
-			for _, todo := range todosOfFile(path) {
+			todos, err := todosOfFile(path)
+
+			if err != nil {
+				return err
+			}
+
+			for _, todo := range todos {
 				result = append(result, todo)
 			}
 		}
