@@ -17,7 +17,7 @@ type Todo struct {
 }
 
 func (todo Todo) String() string {
-	// TODO: Todo.String doesn't print ID
+	// TODO(1): Todo.String doesn't print ID
 	if todo.Id == nil {
 		return fmt.Sprintf("%s:%d: %sTODO: %s\n", todo.Filename, todo.Line, todo.Prefix, todo.Suffix)
 	} else {
@@ -29,9 +29,9 @@ func ref_str(x string) *string {
 	return &x
 }
 
-func lineAsTodo(line string) *Todo {
-	// TODO: lineAsTodo doesn't support reported TODOs
-	// TODO: lineAsTodo has false positive result inside of string literals
+func lineAsUnreportedTodo(line string) *Todo {
+	// TODO(2): lineAsTodo doesn't support reported TODOs
+	// TODO(3): lineAsTodo has false positive result inside of string literals
 	unreportedTodo := regexp.MustCompile("^(.*)TODO: (.*)$")
 	groups := unreportedTodo.FindStringSubmatch(line)
 
@@ -43,6 +43,36 @@ func lineAsTodo(line string) *Todo {
 			Filename: "",
 			Line:     0,
 		}
+	}
+
+	return nil
+}
+
+func lineAsReportedTodo(line string) *Todo {
+	reportedTodo := regexp.MustCompile("^(.*)TODO\\((.*)\\): (.*)$")
+	groups := reportedTodo.FindStringSubmatch(line)
+
+	if groups != nil {
+		return &Todo{
+			Prefix:   groups[1],
+			Suffix:   groups[3],
+			Id:       &groups[2],
+			Filename: "",
+			Line:     0,
+		}
+	}
+
+	return nil
+}
+
+func lineAsTodo(line string) *Todo {
+	// TODO(7): lineAsTodo has false positive result inside of string literals
+	if todo := lineAsUnreportedTodo(line); todo != nil {
+		return todo
+	}
+
+	if todo := lineAsReportedTodo(line); todo != nil {
+		return todo
 	}
 
 	return nil
@@ -100,7 +130,7 @@ func todosOfdir(dirpath string) ([]Todo, error) {
 }
 
 func listSubCommand() {
-	// TODO: listSubCommand doesn't handle error from todosOfDir
+	// TODO(4): listSubCommand doesn't handle error from todosOfDir
 	todos, _ := todosOfdir(".")
 
 	for _, todo := range todos {
@@ -109,7 +139,7 @@ func listSubCommand() {
 }
 
 func reportSubCommand() {
-	// TODO: reportSubCommand not implemented
+	// TODO(5): reportSubCommand not implemented
 	panic("Report is not implemented.")
 }
 
@@ -124,7 +154,7 @@ func main() {
 			panic(fmt.Sprintf("`%s` Unknown Command", os.Args[1]))
 		}
 	} else {
-		// TODO: Implement a map for options instead of printing them all
+		// TODO(6): Implement a map for options instead of printing them all
 		fmt.Printf("fallout [option]\n\tlist: Lists all possible todos of a directory recursively\n\treport: Reports an issue to github\n")
 	}
 }
