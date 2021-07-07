@@ -125,6 +125,6 @@ func main() {
 		}
 	} else {
 		// TODO: Implement a map for options instead of printing them all
-		fmt.Printf("fallout [option]\n\tlist: Lists all possible subcommands\n\treport: Reports an issue to github\n")
+		fmt.Printf("fallout [option]\n\tlist: Lists all possible todos of a directory recursively\n\treport: Reports an issue to github\n")
 	}
 }
