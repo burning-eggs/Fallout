@@ -114,13 +114,17 @@ func reportSubCommand() {
 }
 
 func main() {
-	// TODO: Index out of range error when no subcommands are provided
-	switch os.Args[1] {
-	case "list":
-		listSubCommand()
-	case "report":
-		reportSubCommand()
-	default:
-		panic(fmt.Sprintf("`%s` Unknown Command", os.Args[1]))
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "list":
+			listSubCommand()
+		case "report":
+			reportSubCommand()
+		default:
+			panic(fmt.Sprintf("`%s` Unknown Command", os.Args[1]))
+		}
+	} else {
+		// TODO: Implement a map for options instead of printing them all
+		fmt.Printf("fallout [option]\n\tlist: Lists all possible subcommands\n\treport: Reports an issue to github\n")
 	}
 }
