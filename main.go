@@ -30,8 +30,6 @@ func ref_str(x string) *string {
 }
 
 func lineAsUnreportedTodo(line string) *Todo {
-	// TODO(2): lineAsTodo doesn't support reported TODOs
-	// TODO(3): lineAsTodo has false positive result inside of string literals
 	unreportedTodo := regexp.MustCompile("^(.*)TODO: (.*)$")
 	groups := unreportedTodo.FindStringSubmatch(line)
 
