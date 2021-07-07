@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
 type Todo struct {
@@ -26,8 +27,8 @@ func ref_str(x string) *string {
 	return &x
 }
 
-func TodosOfDir(dirpath string) []Todo {
-	// TODO: TodosOfDir not implemented
+func todosOfFile(path string) []Todo {
+	// TODO: TodosOfFile not implemented
 	return []Todo{
 		Todo{
 			Prefix:   "// ",
@@ -47,8 +48,27 @@ func TodosOfDir(dirpath string) []Todo {
 	}
 }
 
+func todosOfdir(dirpath string) ([]Todo, error) {
+	result := []Todo{}
+
+	err := filepath.Walk(dirpath, func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			for _, todo := range todosOfFile(path) {
+				result = append(result, todo)
+			}
+		}
+
+		return nil
+	})
+
+	return result, err
+}
+
 func listSubCommand() {
-	for _, todo := range TodosOfDir(".") {
+	// TODO: listSubCommand doesn't handle error from todosOfDir
+	todos, _ := todosOfdir(".")
+
+	for _, todo := range todos {
 		fmt.Printf("%v", todo)
 	}
 }
