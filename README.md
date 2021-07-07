@@ -19,10 +19,10 @@ A tool that collects TODOs from the source code and reports them as github issue
 ## Usage
 
 ```
-$ snitch list     # lists all TODOs in the current directory
-$ snitch report   # report all unreported TODOs in current directory
+$ go run main.go list     # lists all TODOs in the current directory
+$ go run main.go report   # report all unreported TODOs in current directory
 ```
 
 ## Github Credentials File
 
-`~/.snitch/config.ini`
+`~/.fallout/config.ini`
