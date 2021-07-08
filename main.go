@@ -76,12 +76,11 @@ func lineAsTodo(line string) *Todo {
 	return nil
 }
 
-func todosOfFile(path string) ([]Todo, error) {
-	result := []Todo{}
+func walkTodosOfFile(path string, visit func(Todo) error) error {
 	file, err := os.Open(path)
 
 	if err != nil {
-		return []Todo{}, err
+		return err
 	}
 
 	defer file.Close()
@@ -96,13 +95,15 @@ func todosOfFile(path string) ([]Todo, error) {
 			todo.Filename = path
 			todo.Line = line
 
-			result = append(result, *todo)
+			if err := visit(*todo); err != nil {
+				return err
+			}
 		}
 
 		line = line + 1
 	}
 
-	return result, scanner.Err()
+	return scanner.Err()
 }
 
 func todosOfdir(dirpath string) ([]Todo, error) {
@@ -110,14 +111,14 @@ func todosOfdir(dirpath string) ([]Todo, error) {
 
 	err := filepath.Walk(dirpath, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
-			todos, err := todosOfFile(path)
+			err := walkTodosOfFile(path, func(todo Todo) error {
+				result = append(result, todo)
+
+				return nil
+			})
 
 			if err != nil {
 				return err
-			}
-
-			for _, todo := range todos {
-				result = append(result, todo)
 			}
 		}
 
